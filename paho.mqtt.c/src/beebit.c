@@ -6,7 +6,7 @@
 
 #define SIZE 10
 
-int beebit_encode(MQTTClient_BeeOptions* beehandle, unsigned char* pt, unsigned char** bee_buf)
+int beebit_encode(MQTTClient_BeeBitOptions* beehandle, unsigned char* pt, unsigned char** bee_buf)
 {
 	unsigned char* ct = NULL;
 	int enc_length=0;
@@ -50,7 +50,7 @@ int beebit_encode(MQTTClient_BeeOptions* beehandle, unsigned char* pt, unsigned 
 	return enc_length+rc+1;
 }
 
-int beebit_decode(MQTTClient_BeeOptions* beehandle, unsigned char* ct, unsigned char** pt)
+int beebit_decode(MQTTClient_BeeBitOptions* beehandle, unsigned char* ct, unsigned char** pt)
 {	
 	int multiplier = 1 ;
 	int number = 1;

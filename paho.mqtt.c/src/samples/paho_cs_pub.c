@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 	MQTTClient client;
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 	MQTTClient_SSLOptions ssl_opts = MQTTClient_SSLOptions_initializer;
-	MQTTClient_BeeOptions bee_opts = MQTTClient_BeeOptions_initializer;
+	MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
 	char* topic = NULL;
 	char* buffer = NULL;
 	int rc = 0;
@@ -150,13 +150,13 @@ int main(int argc, char** argv)
 	conn_opts.password = opts.password;
 	ssl_opts.enableServerCertAuth = 0;
 	//bee_opts.//dosomething = 1;
-	bee_opts.security = CPABE;
-	bee_opts.pubKey="../../../../cpabe_publickey";
-	bee_opts.policy="jackie";
+	beebit_opts.security = CPABE;
+	beebit_opts.pubKey="../../../../cpabe_publickey";
+	beebit_opts.policy="jackie";
 	//bee_opts.policy="jackie and a > 10";
-	bee_opts.secKey="../../../../cpabe_secretkey";
+	beebit_opts.secKey="../../../../cpabe_secretkey";
 	conn_opts.ssl = &ssl_opts;
-  	conn_opts.bee = &bee_opts;
+  	conn_opts.beebit = &beebit_opts;
 	
 	myconnect(&client, &conn_opts);
 

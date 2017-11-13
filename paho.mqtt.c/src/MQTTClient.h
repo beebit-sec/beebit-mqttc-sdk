@@ -630,11 +630,13 @@ typedef struct
    * application does not make use of SSL, set this pointer to NULL.
    */
 	MQTTClient_SSLOptions* ssl;
+
+	/* PROJECT BEEBIT */	
+  	MQTTClient_BeeBitOptions* beebit;
+
 	/**
 	 * The number of entries in the optional serverURIs array. Defaults to 0.
 	 */
-  MQTTClient_BeeOptions* bee;
-
 	int serverURIcount;
 	/**
    * An optional array of null-terminated strings specifying the servers to

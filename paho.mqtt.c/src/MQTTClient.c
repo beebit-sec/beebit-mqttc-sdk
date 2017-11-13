@@ -64,9 +64,9 @@
 #else
 #define URI_SSL "ssl://"
 #endif
-#if defined(BEE)
+//#if defined(BEE)
 //#include "Test.h"
-#endif
+//#endif
 #define URI_TCP "tcp://"
 
 #include "VersionInfo.h"
@@ -189,11 +189,12 @@ typedef struct
 	int ssl;
 #endif
 #if defined(BEE)
-	int bee;
-	MQTTClient_BeeOptions* beehandle;
-//to do MQTTClient_Beeoptions* bee;
-/*MQTTClient_publish(MQTTClients handel)
-this bee point to the MQTTClient_beeoptions to know the security*/
+	int beebit;
+	MQTTClient_BeeBitOptions* beehandle;
+	//to do MQTTClient_Beeoptions* bee;
+	/* MQTTClient_publish(MQTTClients handel)
+	   this bee point to the MQTTClient_beeoptions to know the security
+	*/
 #endif
 	Clients* c;
 	MQTTClient_connectionLost* cl;
@@ -495,19 +496,21 @@ static int MQTTClient_deliverMessage(int rc, MQTTClients* m, char** topicName, i
 	FUNC_ENTRY;
 	*message = qe->msg;
 #if defined(BEE)
-	if(m->bee!=NULL){
-	if(m->bee==1){
-	unsigned char* sub_pt_buffer = NULL;
-	unsigned char* sub_ct_buffer = NULL;
-	sub_ct_buffer =(char*)((*message)->payload);
-	int dec_length = 0;
-	dec_length=beebit_decode(m->beehandle,sub_ct_buffer,&sub_pt_buffer);
-	if(dec_length != -1){
-	*((char*)(sub_pt_buffer+dec_length))='\0';	
-	(*message)->payload=sub_pt_buffer;
-        } else {
-	(*message)->payload="\n";
-        }
+	int decfail = 0;
+	if(m->beebit!=NULL){
+	if(m->beebit==1){
+		unsigned char* sub_pt_buffer = NULL;
+		unsigned char* sub_ct_buffer = NULL;
+		sub_ct_buffer =(char*)((*message)->payload);
+		int dec_length = 0;
+		dec_length=beebit_decode(m->beehandle,sub_ct_buffer,&sub_pt_buffer);
+		if(dec_length != -1){
+			*((char*)(sub_pt_buffer+dec_length))='\0';	
+			(*message)->payload=sub_pt_buffer;
+        	} else {
+			decfail = 1;
+			(*message)->payload="\n";
+        	}
 	}
 }
 #endif	
@@ -1208,9 +1211,9 @@ int MQTTClient_connect(MQTTClient handle, MQTTClient_connectOptions* options)
 #endif
 
 #if defined(BEE)
-	if (options->struct_version != 0 && options->bee) /* check validity of BEE options structure */
+	if (options->struct_version != 0 && options->beebit) /* check validity of BEE options structure */
 	{
-		if (strncmp(options->bee->struct_id, "BEE",3) != 0 || options->bee->struct_version != 0)
+		if (strncmp(options->beebit->struct_id, "BEEBIT", 6) != 0 || options->beebit->struct_version != 0)
 		{
 			rc = MQTTCLIENT_BAD_STRUCTURE;
 			goto exit;
@@ -1227,11 +1230,11 @@ int MQTTClient_connect(MQTTClient handle, MQTTClient_connectOptions* options)
 	if (options->struct_version < 2 || options->serverURIcount == 0)
 		rc = MQTTClient_connectURI(handle, options, m->serverURI);
 #if defined(BEE)
-		if(options->bee != NULL){
+		if(options->beebit != NULL){
 			//if (options->bee->dosomething == 1)
 			//{
-				m->beehandle=options->bee;				
-				m->bee = 1;
+				m->beehandle=options->beebit;				
+				m->beebit = 1;
 			//}
 		}
 #endif
@@ -1615,8 +1618,8 @@ int MQTTClient_publish(MQTTClient handle, const char* topicName, int payloadlen,
 
 	p = malloc(sizeof(Publish));
 #if defined(BEE)
-	if(m->bee!=NULL){
-  	if(m->bee == 1)
+	if(m->beebit!=NULL){
+  	if(m->beebit == 1)
   	{
  			char* bee_buffer = NULL;
 			bee_buffer=payload;

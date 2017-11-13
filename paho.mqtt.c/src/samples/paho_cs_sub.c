@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 {
 	MQTTClient client;
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-	MQTTClient_BeeOptions bee_opts = MQTTClient_BeeOptions_initializer;
+	MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
 	char* topic = NULL;
 	int rc = 0;
 	char url[100];
@@ -143,11 +143,11 @@ int main(int argc, char** argv)
 	conn_opts.cleansession = 1;
 	conn_opts.username = opts.username;
 	conn_opts.password = opts.password;
-	bee_opts.security = CPABE;
+	beebit_opts.security = CPABE;
 	//bee_opts.dosomething = 1;
-	bee_opts.pubKey="../../../../cpabe_publickey_hospital";
-	bee_opts.secKey="../../../../cpabe_secretkey_nurse";
-	conn_opts.bee = &bee_opts;
+	beebit_opts.pubKey="../../../../cpabe_publickey_hospital";
+	beebit_opts.secKey="../../../../cpabe_secretkey_nurse";
+	conn_opts.beebit = &beebit_opts;
 
 	myconnect(&client, &conn_opts);
 

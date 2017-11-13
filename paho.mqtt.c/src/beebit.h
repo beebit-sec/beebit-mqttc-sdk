@@ -12,9 +12,9 @@ typedef struct
 	const unsigned char* pubKey;
 	const unsigned char* secKey;
 	const unsigned char* policy;
-} MQTTClient_BeeOptions;
+} MQTTClient_BeeBitOptions;
 
-#define MQTTClient_BeeOptions_initializer { \ 
+#define MQTTClient_BeeBitOptions_initializer { \ 
 	{'B', 'E', 'E','B','I','T'}, \
 	0, \
 	0, \
