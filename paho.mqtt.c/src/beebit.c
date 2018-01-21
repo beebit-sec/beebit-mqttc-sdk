@@ -15,7 +15,7 @@ int beebit_encode(MQTTClient_BeeBitOptions* beehandle, unsigned char* pt, unsign
 	switch(beehandle->security)
 	{
 		case CPABE:
-			enc_length = cpabe_enc(beehandle->pubKey, pt, beehandle->policy, &ct);
+			enc_length = cpabe_enc(beehandle->options->pubKey, pt, beehandle->options->policy, &ct);
 			if(enc_length == -1){
 				printf("ENC ERROR!\n");
 				return -1;
@@ -65,7 +65,7 @@ int beebit_decode(MQTTClient_BeeBitOptions* beehandle, unsigned char* ct, unsign
 	switch(beehandle->security)
 	{
 		case CPABE:
-			length=cpabe_dec(beehandle->pubKey,beehandle->secKey, ct+number, pt);
+			length=cpabe_dec(beehandle->options->pubKey,beehandle->options->secKey, ct+number, pt);
 			if(length==-1){
 				printf("DEC FAIL\n");
 				return -1;

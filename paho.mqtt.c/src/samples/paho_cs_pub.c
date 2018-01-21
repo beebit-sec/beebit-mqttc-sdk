@@ -119,6 +119,7 @@ int main(int argc, char** argv)
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 	MQTTClient_SSLOptions ssl_opts = MQTTClient_SSLOptions_initializer;
 	MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
+	Bee_CPABE_Options Bee_Options = Bee_CPABE_Options_initializer;
 	char* topic = NULL;
 	char* buffer = NULL;
 	int rc = 0;
@@ -151,10 +152,10 @@ int main(int argc, char** argv)
 	ssl_opts.enableServerCertAuth = 0;
 	//bee_opts.//dosomething = 1;
 	beebit_opts.security = CPABE;
-	beebit_opts.pubKey="../../../../cpabe_publickey";
-	beebit_opts.policy="jackie";
+	Bee_Options.pubKey="/home/lewatin1129/school_project/beebit-mqttc-sdk/cpabe_publickey";
+	Bee_Options.policy="jackie";
 	//bee_opts.policy="jackie and a > 10";
-	beebit_opts.secKey="../../../../cpabe_secretkey";
+	beebit_opts.options = &Bee_Options;
 	conn_opts.ssl = &ssl_opts;
   	conn_opts.beebit = &beebit_opts;
 	
