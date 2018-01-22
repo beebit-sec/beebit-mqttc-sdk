@@ -27,8 +27,8 @@ typedef struct
 
 	/* CP-ABE */
 	
-//	void* Options;
-	Bee_CPABE_Options* options;
+	void* options;
+//	Bee_CPABE_Options* options;
 
 } MQTTClient_BeeBitOptions;
 
