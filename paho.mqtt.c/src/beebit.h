@@ -1,7 +1,6 @@
 /*
 #include "Bee_des.h"
 #include "Bee_three_des.h"
-#include "Bee_aes.h"
 #include "Bee_elgamal.h"
 #include "Bee_rsa.h"
 #include "Bee_ecc.h"
@@ -14,6 +13,7 @@
 */
 
 #include "Bee_CPABE.h"
+#include "Bee_AES.h"
 
 typedef struct
 {

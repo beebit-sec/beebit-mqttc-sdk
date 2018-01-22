@@ -21,6 +21,8 @@ int beebit_encode(MQTTClient_BeeBitOptions* beehandle, unsigned char* pt, unsign
 				return -1;
 			}
 			break;
+		case AES:
+			break;
 		default :
 			break;
 	}
@@ -74,6 +76,8 @@ int beebit_decode(MQTTClient_BeeBitOptions* beehandle, unsigned char* ct, unsign
 				printf("DEC FAIL\n");
 				return -1;
 			}
+			break;
+		case AES:
 			break;
 		default :
 			break;
