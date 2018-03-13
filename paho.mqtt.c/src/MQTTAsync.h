@@ -98,6 +98,10 @@
   #define DLLExport  __attribute__ ((visibility ("default")))
 #endif
 
+//bee
+
+#include "beebit_Async.h"
+
 #include <stdio.h>
 /// @endcond
 
@@ -168,7 +172,10 @@
  * Return code: Attempting SSL connection using non-SSL version of library
  */
 #define MQTTASYNC_SSL_NOT_SUPPORTED -13
-
+/**
+ * Return code: Attempting BEEBIT connection using non-BEEBIT version of library
+ */
+#define MQTTASYNC_BEEBIT_NOT_SUPPORTED -14
 /**
  * Default MQTT version to connect with.  Use 3.1.1 then fall back to 3.1
  */
@@ -762,6 +769,10 @@ typedef struct
       * application does not make use of SSL, set this pointer to NULL.
       */
 	MQTTAsync_SSLOptions* ssl;
+
+	/*PROJECT BEEBIT */
+	MQTTAsync_BeeBitOptions* beebit;
+
 	/**
       * A pointer to a callback function to be called if the connect successfully
       * completes.  Can be set to NULL, in which case no indication of successful
@@ -823,7 +834,7 @@ typedef struct
 
 
 #define MQTTAsync_connectOptions_initializer { {'M', 'Q', 'T', 'C'}, 5, 60, 1, 10, NULL, NULL, NULL, 30, 0,\
-NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 1, 60, {0, NULL}}
+NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 1, 60, {0, NULL}}
 
 /**
   * This function attempts to connect a previously-created client (see

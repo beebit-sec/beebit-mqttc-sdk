@@ -12,27 +12,23 @@
  *
  * Contributors:
  *    Ian Craggs - initial contribution
- *    Ian Craggs - change delimiter option from char to string
- *    Guilherme Maciel Ferreira - add keep alive option
  *******************************************************************************/
 
-/*
-
- stdout subscriber
+ /*
+ stdin publisher
 
  compulsory parameters:
 
-  --topic topic to subscribe to
+  --topic topic to publish on
 
  defaulted parameters:
 
 	--host localhost
 	--port 1883
-	--qos 2
-	--delimiter \n
-	--clientid stdout-subscriber
-	--showtopics off
-	--keepalive 10
+	--qos 0
+	--delimiters \n
+	--clientid stdin_publisher
+	--maxdatalen 100
 
 	--userid none
 	--password none
@@ -46,7 +42,6 @@
 #include <memory.h>
 #include <stdlib.h>
 
-
 #if defined(WIN32)
 #define sleep Sleep
 #else
@@ -57,48 +52,29 @@
 volatile int toStop = 0;
 
 
-struct opts_struct
-{
-	char* clientid;
-	int nodelimiter;
-	char* delimiter;
-	int qos;
-	char* username;
-	char* password;
-	char* host;
-	char* port;
-	int showtopics;
-	int keepalive;
-} opts =
-{
-	"stdout-subscriber", 0, "\n", 2, NULL, NULL, "localhost", "1883", 0, 10
-};
-
-
 void usage(void)
 {
-	printf("MQTT stdout subscriber\n");
-	printf("Usage: stdoutsub topicname <options>, where options are:\n");
-	printf("  --host <hostname> (default is %s)\n", opts.host);
-	printf("  --port <port> (default is %s)\n", opts.port);
-	printf("  --qos <qos> (default is %d)\n", opts.qos);
-	printf("  --delimiter <delim> (default is \\n)\n");
-	printf("  --clientid <clientid> (default is %s)\n", opts.clientid);
+	printf("MQTT stdin publisher\n");
+	printf("Usage: stdinpub topicname <options>, where options are:\n");
+	printf("  --host <hostname> (default is localhost)\n");
+	printf("  --port <port> (default is 1883)\n");
+	printf("  --qos <qos> (default is 0)\n");
+	printf("  --retained (default is off)\n");
+	printf("  --delimiter <delim> (default is \\n)");
+	printf("  --clientid <clientid> (default is hostname+timestamp)");
+	printf("  --maxdatalen 100\n");
 	printf("  --username none\n");
 	printf("  --password none\n");
-	printf("  --showtopics <on or off> (default is on if the topic has a wildcard, else off)\n");
-	printf("  --keepalive <seconds> (default is %d seconds)\n", opts.keepalive);
 	exit(EXIT_FAILURE);
 }
 
 
 void myconnect(MQTTClient* client, MQTTClient_connectOptions* opts)
 {
-	int rc = 0;
 	printf("Connecting\n");
-	if ((rc = MQTTClient_connect(*client, opts)) != 0)
+	if (MQTTClient_connect(*client, opts) != 0)
 	{
-		printf("Failed to connect, return code %d\n", rc);
+		printf("Failed to connect\n");
 		exit(EXIT_FAILURE);
 	}
 	printf("Connected\n");
@@ -111,83 +87,117 @@ void cfinish(int sig)
 	toStop = 1;
 }
 
+
+struct
+{
+	char* clientid;
+	char* delimiter;
+	int maxdatalen;
+	int qos;
+	int retained;
+	char* username;
+	char* password;
+	char* host;
+	char* port;
+  int verbose;
+} opts =
+{
+	"publisher", "\n", 100, 0, 0, NULL, NULL, "localhost", "1883", 0
+};
+
 void getopts(int argc, char** argv);
+
+int messageArrived(void* context, char* topicName, int topicLen, MQTTClient_message* m)
+{
+	/* not expecting any messages */
+	return 1;
+}
 
 int main(int argc, char** argv)
 {
 	MQTTClient client;
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+	MQTTClient_SSLOptions ssl_opts = MQTTClient_SSLOptions_initializer;
 	MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
-
-	//based on encryption to choose options (default is CPABE)
-	Bee_CPABE_Options Bee_Options = Bee_CPABE_Options_initializer;
-	//Bee_AES_options Bee_Options = Bee_AES_Options_initializer;
-
 	char* topic = NULL;
+	char* buffer = NULL;
 	int rc = 0;
 	char url[100];
 
 	if (argc < 2)
 		usage();
 
-	topic = argv[1];
-
-	if (strchr(topic, '#') || strchr(topic, '+'))
-		opts.showtopics = 1;
-	if (opts.showtopics)
-		printf("topic is %s\n", topic);
-
 	getopts(argc, argv);
+
 	sprintf(url, "%s:%s", opts.host, opts.port);
+	if (opts.verbose)
+		printf("URL is %s\n", url);
+
+	topic = argv[1];
+	printf("Using topic %s\n", topic);
 
 	rc = MQTTClient_create(&client, url, opts.clientid, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
 	signal(SIGINT, cfinish);
 	signal(SIGTERM, cfinish);
 
-	conn_opts.keepAliveInterval = opts.keepalive;
+	rc = MQTTClient_setCallbacks(client, NULL, NULL, messageArrived, NULL);
+
+	conn_opts.keepAliveInterval = 10;
 	conn_opts.reliable = 0;
 	conn_opts.cleansession = 1;
 	conn_opts.username = opts.username;
 	conn_opts.password = opts.password;
+	ssl_opts.enableServerCertAuth = 0;
 	beebit_opts.security = CPABE;
-	Bee_Options.pubKey="../../../../cpabe_publickey";
-	Bee_Options.secKey="../../../../cpabe_secretkey";
-	beebit_opts.options = &Bee_Options;
-	conn_opts.beebit = &beebit_opts;
-
+	beebit_opts.pubKey="/home/lewatin1129/Desktop/pubKey";
+	beebit_opts.policy="doctor and Wu";
+	conn_opts.ssl = &ssl_opts;
+  	conn_opts.beebit = &beebit_opts;
+	
 	myconnect(&client, &conn_opts);
 
-	rc = MQTTClient_subscribe(client, topic, opts.qos);
+	buffer = malloc(opts.maxdatalen);
 
 	while (!toStop)
 	{
-		char* topicName = NULL;
-		int topicLen;
-		MQTTClient_message* message = NULL;
+		int data_len = 0;
+		int delim_len = 0;
 
-		rc = MQTTClient_receive(client, &topicName, &topicLen, &message, 1000);
-		if (message)
+		delim_len = (int)strlen(opts.delimiter);
+		do
 		{
-			if (opts.showtopics)
-				printf("%s\t", topicName);
-			if (opts.nodelimiter)
-				printf("%.*s", message->payloadlen, (char*)message->payload);
-			else
-				printf("%.*s%s", message->payloadlen, (char*)message->payload, opts.delimiter);
-			fflush(stdout);
-			MQTTClient_freeMessage(&message);
-			MQTTClient_free(topicName);
-		}
+			buffer[data_len++] = getchar();
+			if (data_len > delim_len)
+			{
+			//char* delimiter; ="\n"
+//			printf("comparing opts.delimiter = %d, &buffer[data_len - delim_len] = %d\n", opts.delimiter, &buffer[data_len - delim_len]);
+			//Compares up to  delim_len characters of the string opts.delimiter with the string &buffer[data_len - delim_len].
+			if (strncmp(opts.delimiter, &buffer[data_len - delim_len], delim_len) == 0)
+				break;
+			}
+			
+		} while (data_len < opts.maxdatalen);
+		 
+		if (opts.verbose)
+				printf("Publishing data of length %d\n", data_len);
+		rc = MQTTClient_publish(client, topic, data_len, buffer, opts.qos, opts.retained, NULL);
 		if (rc != 0)
+		{
 			myconnect(&client, &conn_opts);
+			rc = MQTTClient_publish(client, topic, data_len, buffer, opts.qos, opts.retained, NULL);
+		}
+		if (opts.qos > 0)
+			MQTTClient_yield();
 	}
 
 	printf("Stopping\n");
 
+	free(buffer);
+
 	MQTTClient_disconnect(client, 0);
 
-	MQTTClient_destroy(&client);
+ 	MQTTClient_destroy(&client);
 
 	return EXIT_SUCCESS;
 }
@@ -198,7 +208,11 @@ void getopts(int argc, char** argv)
 
 	while (count < argc)
 	{
-		if (strcmp(argv[count], "--qos") == 0)
+		if (strcmp(argv[count], "--retained") == 0)
+			opts.retained = 1;
+		if (strcmp(argv[count], "--verbose") == 0)
+			opts.verbose = 1;
+		else if (strcmp(argv[count], "--qos") == 0)
 		{
 			if (++count < argc)
 			{
@@ -249,31 +263,17 @@ void getopts(int argc, char** argv)
 			else
 				usage();
 		}
+		else if (strcmp(argv[count], "--maxdatalen") == 0)
+		{
+			if (++count < argc)
+				opts.maxdatalen = atoi(argv[count]);
+			else
+				usage();
+		}
 		else if (strcmp(argv[count], "--delimiter") == 0)
 		{
 			if (++count < argc)
 				opts.delimiter = argv[count];
-			else
-				opts.nodelimiter = 1;
-		}
-		else if (strcmp(argv[count], "--showtopics") == 0)
-		{
-			if (++count < argc)
-			{
-				if (strcmp(argv[count], "on") == 0)
-					opts.showtopics = 1;
-				else if (strcmp(argv[count], "off") == 0)
-					opts.showtopics = 0;
-				else
-					usage();
-			}
-			else
-				usage();
-		}
-		else if (strcmp(argv[count], "--keepalive") == 0)
-		{
-			if (++count < argc)
-				opts.keepalive = atoi(argv[count]);
 			else
 				usage();
 		}

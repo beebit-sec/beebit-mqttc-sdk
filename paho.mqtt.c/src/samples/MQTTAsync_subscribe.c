@@ -25,9 +25,9 @@
 #include <windows.h>
 #endif
 
-#define ADDRESS     "tcp://localhost:1883"
+#define ADDRESS     "tcp://broker.hivemq.com:1883"
 #define CLIENTID    "ExampleClientSub"
-#define TOPIC       "MQTT Examples"
+#define TOPIC       "au"
 #define PAYLOAD     "Hello World!"
 #define QOS         1
 #define TIMEOUT     10000L
@@ -136,6 +136,10 @@ int main(int argc, char* argv[])
 {
 	MQTTAsync client;
 	MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
+//bee
+        MQTTAsync_BeeBitOptions beebit_opts = MQTTAsync_BeeBitOptions_initializer;
+//bee
+
 	MQTTAsync_disconnectOptions disc_opts = MQTTAsync_disconnectOptions_initializer;
 	MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
 	MQTTAsync_token token;
@@ -151,6 +155,13 @@ int main(int argc, char* argv[])
 	conn_opts.onSuccess = onConnect;
 	conn_opts.onFailure = onConnectFailure;
 	conn_opts.context = client;
+//bee
+        beebit_opts.security = CPABE;
+        beebit_opts.pubKey = "../../../../cpabe_publickey";
+        beebit_opts.secKey = "../../../../cpabe_secretkey";
+        conn_opts.beebit = &beebit_opts;
+//bee
+	
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
 	{
 		printf("Failed to start connect, return code %d\n", rc);
