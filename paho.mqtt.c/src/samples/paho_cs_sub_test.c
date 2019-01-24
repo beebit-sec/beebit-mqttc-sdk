@@ -61,7 +61,8 @@ int main(int argc, char** argv)
 
   MQTTClient subclient;
   MQTTClient_connectOptions subconn_opts = MQTTClient_connectOptions_initializer;
-  MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
+  BeebitOptions beebitOpts = BeebitOptions_initializer;
+  BeebitCPABEOptions cpabeOpts = BeebitCPABEOptions_initializer;
 	char* topic ="abc1234";
   char* buffer = NULL;
 
@@ -83,11 +84,12 @@ int main(int argc, char** argv)
 	subconn_opts.cleansession = 1;
 	subconn_opts.username = subopts.username;
 	subconn_opts.password = subopts.password;
-	beebit_opts.security = CPABE;
- 	beebit_opts.pubKey="/home/jackie/Desktop/pubKey";
-  //beebit.policy="role <= 2";
- 	beebit_opts.secKey="/home/jackie/Desktop/secKey_ok";
- 	subconn_opts.beebit = &beebit_opts;
+	beebitOpts.security = AC_CPABE;
+ 	cpabeOpts.pk = "/home/jackie/Desktop/pubKey";
+	cpabeOpts.ap = "role <= 2";
+ 	cpabeOpts.sk = "/home/jackie/Desktop/secKey_ok";
+	beebitOpts.opts = &cpabeOpts;
+ 	subconn_opts.beebit = &beebitOpts;
   myconnect(&subclient, &subconn_opts,"sub");
   
   subrc= MQTTClient_subscribe(subclient, topic, subopts.qos);

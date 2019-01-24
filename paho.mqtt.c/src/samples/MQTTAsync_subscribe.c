@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 	MQTTAsync client;
 	MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
 //bee
-        MQTTAsync_BeeBitOptions beebit_opts = MQTTAsync_BeeBitOptions_initializer;
+        BeebitAsyncOptions beebitAsyncOpts = BeebitAsyncOptions_initializer;
 //bee
 
 	MQTTAsync_disconnectOptions disc_opts = MQTTAsync_disconnectOptions_initializer;
@@ -156,10 +156,12 @@ int main(int argc, char* argv[])
 	conn_opts.onFailure = onConnectFailure;
 	conn_opts.context = client;
 //bee
-        beebit_opts.security = CPABE;
-        beebit_opts.pubKey = "../../../../cpabe_publickey";
-        beebit_opts.secKey = "../../../../cpabe_secretkey";
-        conn_opts.beebit = &beebit_opts;
+        BeebitCPABEOptions cpabeOpts = BeebitCPABEOptions_initializer;
+        beebitAsyncOpts.security = AC_CPABE;
+        cpabeOpts.pk = "/root/beebit-mqttc-sdk/cpabe_publickey";
+       	cpabeOpts.sk = "/root/beebit-mqttc-sdk/cpabe_secretkey";
+	beebitAsyncOpts.opts = &cpabeOpts;
+	conn_opts.beebit = &beebitAsyncOpts;
 //bee
 	
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)

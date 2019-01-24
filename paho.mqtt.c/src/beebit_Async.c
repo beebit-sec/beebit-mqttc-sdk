@@ -6,7 +6,7 @@
 
 #define SIZE 10
 
-int beebit_encode_Async(MQTTAsync_BeeBitOptions* beehandle, unsigned char* pt, unsigned char** bee_buf)
+int beebit_encode_Async(BeebitAsyncOptions* beehandle, char* pt, char** bee_buf)
 {
 	unsigned char* ct = NULL;
 	int enc_length=0;
@@ -14,8 +14,8 @@ int beebit_encode_Async(MQTTAsync_BeeBitOptions* beehandle, unsigned char* pt, u
 
 	switch(beehandle->security)
 	{
-		case CPABE:
-			enc_length = cpabe_enc(beehandle->pubKey, pt, beehandle->policy, &ct);
+		case AC_CPABE:
+			enc_length = cpabe_enc(((BeebitCPABEOptions*)(beehandle->opts))->pk, pt, ((BeebitCPABEOptions*)(beehandle->opts))->ap, &ct);
 			if(enc_length == -1){
 				printf("ENC ERROR!\n");
 				return -1;
@@ -40,7 +40,7 @@ int beebit_encode_Async(MQTTAsync_BeeBitOptions* beehandle, unsigned char* pt, u
 	unsigned char* bee_buf_temp = malloc(sizeof(unsigned char)*(rc + enc_length));	
 	switch(beehandle->security)
 	{
-		case CPABE:
+		case AC_CPABE:
 			memcpy(bee_buf_temp,&(beehandle->security), 1);
 			memcpy(bee_buf_temp+1,bee_len_buf, rc);
 			memcpy(bee_buf_temp+rc+1, ct, enc_length);
@@ -50,7 +50,7 @@ int beebit_encode_Async(MQTTAsync_BeeBitOptions* beehandle, unsigned char* pt, u
 	return enc_length+rc+1;
 }
 
-int beebit_decode_Async(MQTTAsync_BeeBitOptions* beehandle, unsigned char* ct, unsigned char** pt)
+int beebit_decode_Async(BeebitAsyncOptions* beehandle, char* ct, char** pt)
 {	
 	int multiplier = 1 ;
 	int number = 1;
@@ -62,10 +62,10 @@ int beebit_decode_Async(MQTTAsync_BeeBitOptions* beehandle, unsigned char* ct, u
 	 } while((ct[number++] &128) != 0);
 	*(ct+number+value)='\0';
 	int length=0;
-	switch(beehandle->security)
+	switch(ct[0])
 	{
-		case CPABE:
-			length=cpabe_dec(beehandle->pubKey,beehandle->secKey, ct+number, pt);
+		case AC_CPABE:
+			length=cpabe_dec(((BeebitCPABEOptions*)(beehandle->opts))->pk,((BeebitCPABEOptions*)(beehandle->opts))->sk, ct+number, pt);
 			if(length==-1){
 				printf("DEC FAIL\n");
 				return -1;

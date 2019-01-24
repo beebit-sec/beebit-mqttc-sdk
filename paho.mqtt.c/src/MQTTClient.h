@@ -632,8 +632,7 @@ typedef struct
 	MQTTClient_SSLOptions* ssl;
 
 	/* PROJECT BEEBIT */	
-  	MQTTClient_BeeBitOptions* beebit;
-
+	BeebitOptions* beebit;
 	/**
 	 * The number of entries in the optional serverURIs array. Defaults to 0.
 	 */

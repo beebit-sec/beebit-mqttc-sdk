@@ -1,86 +1,91 @@
-#include"beebit.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<beebitcpabe.h>
+#include"beebit.h"
 
-#define SIZE 10
-
-int beebit_encode(MQTTClient_BeeBitOptions* beehandle, unsigned char* pt, unsigned char** bee_buf)
-{
-	unsigned char* ct = NULL;
-	int enc_length=0;
+/* Generate MQTT-TTS packet */
+int beebit_encode(BeebitOptions* opt, unsigned char* src, unsigned char** pkt) {
+	unsigned char* dst = NULL;
+	int dst_len = 0;
+	int pkt_len = 1; // Lenth of fixed header
 	int rc = 0;
 
-	switch(beehandle->security)
-	{
-		case CPABE:
-			enc_length = cpabe_enc(((Bee_CPABE_Options*)(beehandle->options))->pubKey, pt, ((Bee_CPABE_Options*)(beehandle->options))->policy, &ct);
-			if(enc_length == -1){
-				printf("ENC ERROR!\n");
-				return -1;
-			}
-			break;
-		case AES:
-			break;
-		default :
-			break;
+	/* Perform security mechanism */
+	switch(opt->security) {
+	case AC_CPABE:
+		dst_len = cpabe_enc(((BeebitCPABEOptions*)(opt->opts))->pk, src, ((BeebitCPABEOptions*)(opt->opts))->ap, &dst);
+		if(dst_len == -1) {
+			printf("ENC ERROR!\n");
+			return EXIT_FAILURE;
+		}
+		printf("%d\n", dst_len);
+		break;
+	case SC_AES:
+		break;
+	default :
+		break;
 	}
+	pkt_len += dst_len;
 
-	int encodelen = enc_length;
+	/* TODO: Generate security specific header */
 
+
+	/* Generate compressed payload length */
+	int encode_len = dst_len;
 	unsigned char* bee_len_buf = malloc(sizeof(unsigned char)*4);
-	do
-	{	
-		char d = encodelen % 128;
-              	encodelen /= 128;
-              	if(encodelen > 0)
-              	{
+	do {	
+		char d = encode_len % 128;
+              	encode_len /= 128;
+              	if(encode_len > 0) {
               		d |= 0x80;
               	}
               	bee_len_buf[rc++] = d;
-	} while (encodelen > 0);
+	} while (encode_len > 0);
+	pkt_len += rc;
 
-	unsigned char* bee_buf_temp = malloc(sizeof(unsigned char)*(rc + enc_length));	
-	switch(beehandle->security)
-	{
-		case CPABE:
-			memcpy(bee_buf_temp,&(beehandle->security), 1);
-			memcpy(bee_buf_temp+1,bee_len_buf, rc);
-			memcpy(bee_buf_temp+rc+1, ct, enc_length);
-			*bee_buf = bee_buf_temp;
-			break;
-		default :
-			break;
+	/* Generate MQTT-TTS packet */
+	unsigned char* bee_buf_temp;	
+	switch(opt->security) {
+	case AC_CPABE:
+		bee_buf_temp = (unsigned char*)malloc(sizeof(unsigned char)*pkt_len);	
+		memcpy(bee_buf_temp, &(opt->security), 1);
+		memcpy(bee_buf_temp+1, bee_len_buf, rc);
+		memcpy(bee_buf_temp+1+rc, dst, dst_len);
+		*pkt = bee_buf_temp;
+		free(bee_len_buf);
+		break;
+	case SC_AES:
+		break;
+	default :
+		break;
 	}
-	return enc_length+rc+1;
+	return pkt_len;
 }
 
-int beebit_decode(MQTTClient_BeeBitOptions* beehandle, unsigned char* ct, unsigned char** pt)
-{	
+int beebit_decode(BeebitOptions* opt, unsigned char* src, unsigned char** pkt) {	
 	int multiplier = 1 ;
 	int number = 1;
 	int value = 0;
-	do
-	{
-		value += (ct[number] &127) * multiplier;
+	do {
+		value += (src[number] & 127) * multiplier;
 		multiplier *= 128;
-	 } while((ct[number++] &128) != 0);
-	*(ct+number+value)='\0';
-	int length=0;
-	switch(beehandle->security)
-	{
-		case CPABE:
-			length=cpabe_dec(((Bee_CPABE_Options*)(beehandle->options))->pubKey,((Bee_CPABE_Options*)(beehandle->options))->secKey, ct+number, pt);
-			if(length==-1){
-				printf("DEC FAIL\n");
-				return -1;
-			}
-			break;
-		case AES:
-			break;
-		default :
-			break;
+	 } while((src[number++] &128) != 0);
+	
+	int len = 0;
+	switch(src[0]) {
+	case AC_CPABE:
+		printf("%d\n",value);
+		len = cpabe_dec(((BeebitCPABEOptions*)(opt->opts))->pk,((BeebitCPABEOptions*)(opt->opts))->sk, src+number, pkt);
+		if(len == -1){
+			printf("DEC FAIL\n");
+			return -1;
+		}
+		break;
+	case SC_AES:
+		break;
+	default :
+		break;
 	}
-	return length;
+	return len;
 }	

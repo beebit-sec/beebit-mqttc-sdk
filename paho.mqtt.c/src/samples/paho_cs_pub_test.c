@@ -66,7 +66,8 @@ int main(int argc, char** argv)
   MQTTClient client;
   MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
   MQTTClient_SSLOptions ssl_opts = MQTTClient_SSLOptions_initializer;
-  MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
+  BeebitOptions beebitOpts = BeebitOptions_initializer;
+  BeebitCPABEOptions cpabeOpts = BeebitCPABEOptions_initializer;
   buffer = malloc(opts.maxdatalen);
 	char* topic ="abc1234";
   
@@ -95,12 +96,13 @@ getopts(argc, argv);
   conn_opts.username = opts.username;
   conn_opts.password = opts.password;
   ssl_opts.enableServerCertAuth = 0;
-  beebit_opts.security = CPABE;
-  beebit_opts.pubKey="/home/jackie/Desktop/pubKey";
-  beebit_opts.policy="role <= 2";
+  beebitOpts.security = AC_CPABE;
+  cpabeOpts.pk = "/home/jackie/Desktop/pubKey";
+  cpabeOpts.ap = "role <= 2";
   //beebit.secKey="~/Desktop/secKey_ok";
   conn_opts.ssl = &ssl_opts;
-  conn_opts.beebit = &beebit_opts;
+  beebitOpts.opts = &cpabeOpts;
+  conn_opts.beebit = &beebitOpts;
   //enc pub setting
   myconnect(&client, &conn_opts,"pub"); 
 	

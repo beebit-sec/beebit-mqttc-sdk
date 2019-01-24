@@ -117,10 +117,10 @@ int main(int argc, char** argv)
 {
 	MQTTClient client;
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-	MQTTClient_BeeBitOptions beebit_opts = MQTTClient_BeeBitOptions_initializer;
+	BeebitOptions beebitOpts = BeebitOptions_initializer;
 
 	//based on encryption to choose options (default is CPABE)
-	Bee_CPABE_Options Bee_Options = Bee_CPABE_Options_initializer;
+	BeebitCPABEOptions cpabeOpts = BeebitCPABEOptions_initializer;
 	//Bee_AES_options Bee_Options = Bee_AES_Options_initializer;
 
 	char* topic = NULL;
@@ -150,11 +150,11 @@ int main(int argc, char** argv)
 	conn_opts.cleansession = 1;
 	conn_opts.username = opts.username;
 	conn_opts.password = opts.password;
-	beebit_opts.security = CPABE;
-	Bee_Options.pubKey="../../../../cpabe_publickey";
-	Bee_Options.secKey="../../../../cpabe_secretkey";
-	beebit_opts.options = &Bee_Options;
-	conn_opts.beebit = &beebit_opts;
+	beebitOpts.security = AC_CPABE;
+	cpabeOpts.pk = "/root/beebit-mqttc-sdk/cpabe_publickey";
+	cpabeOpts.sk = "/root/beebit-mqttc-sdk/cpabe_secretkey";
+	beebitOpts.opts = &cpabeOpts;
+	conn_opts.beebit = &beebitOpts;
 
 	myconnect(&client, &conn_opts);
 
