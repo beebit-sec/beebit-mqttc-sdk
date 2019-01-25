@@ -771,7 +771,7 @@ typedef struct
 	MQTTAsync_SSLOptions* ssl;
 
 	/*PROJECT BEEBIT */
-	MQTTAsync_BeeBitOptions* beebit;
+	BeebitAsyncOptions* beebit;
 
 	/**
       * A pointer to a callback function to be called if the connect successfully

@@ -64,9 +64,7 @@
 #else
 #define URI_SSL "ssl://"
 #endif
-//#if defined(BEE)
-//#include "Test.h"
-//#endif
+
 #define URI_TCP "tcp://"
 
 #include "VersionInfo.h"
@@ -190,7 +188,7 @@ typedef struct
 #endif
 #if defined(BEE)
 	int beebit;
-	MQTTClient_BeeBitOptions* beehandle;
+	BeebitOptions* beehandle;
 	//to do MQTTClient_Beeoptions* bee;
 	/* MQTTClient_publish(MQTTClients handel)
 	   this bee point to the MQTTClient_beeoptions to know the security
@@ -1211,10 +1209,8 @@ int MQTTClient_connect(MQTTClient handle, MQTTClient_connectOptions* options)
 #endif
 
 #if defined(BEE)
-	if (options->struct_version != 0 && options->beebit) /* check validity of BEE options structure */
-	{
-		if (strncmp(options->beebit->struct_id, "BEEBIT", 6) != 0 || options->beebit->struct_version != 0)
-		{
+	if(options->struct_version != 0 && options->beebit) /* check validity of BEE options structure */ {
+		if (strncmp(options->beebit->struct_id, "BEEBIT", 6) != 0 || options->beebit->struct_version != 0) {
 			rc = MQTTCLIENT_BAD_STRUCTURE;
 			goto exit;
 		}
@@ -1233,8 +1229,8 @@ int MQTTClient_connect(MQTTClient handle, MQTTClient_connectOptions* options)
 		if(options->beebit != NULL){
 			//if (options->bee->dosomething == 1)
 			//{
-				m->beehandle=options->beebit;				
-				m->beebit = 1;
+			m->beehandle = options->beebit;				
+			m->beebit = 1;
 			//}
 		}
 #endif
@@ -1618,23 +1614,20 @@ int MQTTClient_publish(MQTTClient handle, const char* topicName, int payloadlen,
 
 	p = malloc(sizeof(Publish));
 #if defined(BEE)
-	if(m->beebit!=NULL){
-  	if(m->beebit == 1)
-  	{
+	if(m->beebit!=NULL) {
+  		if(m->beebit == 1) {
  			char* bee_buffer = NULL;
-			bee_buffer=payload;
-			*((char*)(payload+(payloadlen)))='\0';
+			bee_buffer = payload;
+			*((char*)(payload)+payloadlen) = '\0'; //for string
 			unsigned char* bee_buf = NULL;
-	int length=0;
-	int bee_encodelen=0;
-	length=beebit_encode(m->beehandle,bee_buffer,&bee_buf);
-	payload = bee_buf;
-	payloadlen = length;
-	
-  	}
-}
-		
- #endif
+			int length = 0;
+			int bee_encodelen = 0;
+			length = beebit_encode(m->beehandle, bee_buffer, &bee_buf);
+			payload = bee_buf;
+			payloadlen = length;
+  		}
+	}		
+#endif
 	p->payload = payload;
 	p->payloadlen = payloadlen;
 	p->topic = (char*)topicName;

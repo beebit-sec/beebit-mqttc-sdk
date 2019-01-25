@@ -1,3 +1,9 @@
+#ifndef BEEBIT_ASYNC_H
+#define BEEBIT_ASYNC_H
+
+#include "beebit_cpabe.h"
+#include "beebit_aes.h"
+
 typedef struct
 {
 	/** The eyecatcher for this structure. Must be BEEBIT */
@@ -9,18 +15,11 @@ typedef struct
 	int security;
 
 	/* CP-ABE */
-	const unsigned char* pubKey;
-	const unsigned char* secKey;
-	const unsigned char* policy;
-} MQTTAsync_BeeBitOptions;
+	void* opts;
+} BeebitAsyncOptions;
 
-#define MQTTAsync_BeeBitOptions_initializer { \ 
-	{'B', 'E', 'E','B','I','T'}, \
-	0, \
-	0, \
-	NULL,\ 
-	NULL,\
-	NULL,\ 
-}
+#define BeebitAsyncOptions_initializer {{'B', 'E', 'E','B','I','T'},0,0,NULL}
 
-#define CPABE 6
+#define AC_CPABE 67
+
+#endif

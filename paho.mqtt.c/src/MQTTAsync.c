@@ -289,7 +289,7 @@ typedef struct MQTTAsync_struct
 
 #if defined(BEE)
 	int beebit;
-	MQTTAsync_BeeBitOptions* beehandle;
+	BeebitAsyncOptions* beehandle;
 	//to do MQTTAsync_BeeBitOptions* bee;
 	/*	MQTTAsync_send(MQTTAsync handle)
 		this beebit point to the MQTTAsync_BeeBitOptions to know the security
