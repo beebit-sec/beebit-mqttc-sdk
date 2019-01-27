@@ -142,6 +142,7 @@ int main(int argc, char* argv[])
 	cpabeOpts.ap = "jackie";
 	beebitOpts.opts = &cpabeOpts;
 	conn_opts.beebit = &beebitOpts;
+
 //bee
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
 	{

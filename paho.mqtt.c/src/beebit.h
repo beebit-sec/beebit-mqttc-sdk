@@ -8,7 +8,7 @@ typedef struct {
 	/** The version number of this structure.  Must be 0 */
 	int struct_version;
 
-        /* Security mechanism */
+  /* Security mechanism */
 	unsigned char security;
 
 	/* Options for security mechanism*/
