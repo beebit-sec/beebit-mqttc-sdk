@@ -15,12 +15,14 @@ int beebit_cpabe_encode(const BeebitOptions* opt, char* src, int src_len, char**
 	int ct_len = 0;
 	
 	ct_len = cpabe_enc_l(((BeebitCPABEOptions*)(opt->opts))->pk, src, src_len, ((BeebitCPABEOptions*)(opt->opts))->ap, &ct);
+
 	if(ct_len == -1) {
 		printf("[AC_CPABE] Encrypt failed!\n");
 		return EXIT_FAILURE;
 	}
 
 	int dst_len = create_mqtt_tts_msg(opt->security, ct, ct_len, dst);
+
 	return dst_len;
 }
 

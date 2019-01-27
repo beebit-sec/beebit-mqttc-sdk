@@ -24,6 +24,7 @@ int beebit_dummy_decode(const BeebitOptions* opt, char* src, int src_len, char**
 
 	char* dst_buf = (char*)malloc(sizeof(char)*dst_len);	
 	memcpy(dst_buf, src+number, dst_len);
+
 	int i;
 	for(i=0;i<dst_len;i++) {
 		dst_buf[i] = toupper(dst_buf[i]);
