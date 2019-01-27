@@ -42,10 +42,19 @@ Assume we want to add a dummy security mechanism, called RV_LOWER, in which enco
 Add one entry in function pointer array - init_sec_map[]. (eg. init_lower)
 
 ### Step 3. Prepare source and header files
-1. beebit_lower.h (
+1. beebit_lower.h
 2. beebit_lower.c 
 
-### Step 4. Rebuild project
+### Step 4. Add beebit options in applications
+1. paho_cs_pub.c
+2. paho_cs_sub.c
+
+### Step 5. Rebuild project
+~~~base
+make clean
+make uninstall
+make install
+~~~
 
 ## Reference
 1. http://mqtt.org/
