@@ -1,17 +1,15 @@
 #ifndef BEEBIT_EXTEND_H
 #define BEEBIT_EXTEND_H
 
-#define NOM 2
+#define NOM 3
 
 /* Ciphertext-Policy Attribute-Based Encryption */
 #include "beebit_cpabe.h"
 #include "beebit_dummy.h"
+#include "beebit_lower.h"
 
 typedef void (*init_sec)();
 extern init_sec init_sec_map[NOM];
-
-#define __EXTEND__ "AC_CPABE,67\n"\
-		   "DUMMY, 192"
 
 #endif
 
@@ -29,3 +27,4 @@ extern init_sec init_sec_map[NOM];
 //#define HS_SHA3 131
 //#define HS_RIPEMD 132
 //#define RV_DUMMY 192
+//#define RV_LOWER 193
