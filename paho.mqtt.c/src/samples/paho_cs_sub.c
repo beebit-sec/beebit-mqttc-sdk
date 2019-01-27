@@ -124,6 +124,7 @@ int main(int argc, char** argv)
 	//based on encryption to choose options (default is CPABE)
 	BeebitCPABEOptions cpabeOpts = BeebitCPABEOptions_initializer;
 	BeebitDUMMYOptions dummyOpts = BeebitDUMMYOptions_initializer;
+	BeebitLOWEROptions lowerOpts = BeebitLOWEROptions_initializer;
 
 	char* topic = NULL;
 	int rc = 0;
@@ -152,12 +153,14 @@ int main(int argc, char** argv)
 	conn_opts.cleansession = 1;
 	conn_opts.username = opts.username;
 	conn_opts.password = opts.password;
-	beebitOpts.security = AC_CPABE;
-	//beebitOpts.security = RV_DUMMY;
+	//beebitOpts.security = AC_CPABE;
+	beebitOpts.security = RV_DUMMY;
+	//beebitOpts.security = RV_LOWER;
 	cpabeOpts.pk = "/root/beebit-mqttc-sdk/cpabe_publickey";
 	cpabeOpts.sk = "/root/beebit-mqttc-sdk/cpabe_secretkey";
-	beebitOpts.opts = &cpabeOpts;
-	//beebitOpts.opts = &dummyOpts;
+	//beebitOpts.opts = &cpabeOpts;
+	beebitOpts.opts = &dummyOpts;
+	//beebitOpts.opts = &lowerOpts;
 	conn_opts.beebit = &beebitOpts;
 
 	myconnect(&client, &conn_opts);

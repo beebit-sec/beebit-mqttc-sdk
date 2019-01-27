@@ -12,6 +12,7 @@ The **beebit-mqttc-sdk** module implements an extensible and transparent end-to-
 The implementation is based on open source project - [Eclipse Paho](https://www.eclipse.org/paho/)[3]. Paho is the most popular projecr which provides MQTT and MQTT-SN client and supports a variety of langiages. The **beebit-mqttc-sdk** is based on C language.
 
 ## Install
+In order to applying CP-ABE in MQTT-TTS, you MUST install the [**beebit-cpabe-sdk**](https://github.com/beebit-sec/beebit-cpabe-sdk) module (native C). 
 ~~~bash
 cd paho.mqtt.c
 make clean
@@ -30,6 +31,21 @@ Run publisher on the other terminal
 ./build/output/samples/paho_cs_pub au/csie --host iot.eclipse.org
 hello world
 ~~~
+
+## How to add a new security mechanism in MQTT-TTS
+Assume we want to add a dummy security mechanism, called RV_LOWER, in which encoder does nothing and decoder juse lower case of data.
+### Step 1. Revise beebit_extend.h
+1. Redefine constant NOM
+2. Include header file (eg. ~~~#include "beebit_lower.h"~~~)
+
+### Step 2. Revise beebit_extend.c
+Add one entry in function pointer array - init_sec_map[]. (eg. init_lower)
+
+### Step 3. Prepare source and header files
+1. beebit_lower.h (
+2. beebit_lower.c 
+
+### Step 4. Rebuild project
 
 ## Reference
 1. http://mqtt.org/
