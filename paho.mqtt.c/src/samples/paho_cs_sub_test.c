@@ -12,6 +12,10 @@
 #include <sys/time.h>
 #endif
 
+//bee
+#include "../beebit.h"
+#include "../beebit_cpabe.h"
+
 volatile int toStop = 0;
 
 void myconnect(MQTTClient* client, MQTTClient_connectOptions* opts,char* mod)

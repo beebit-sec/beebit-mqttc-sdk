@@ -69,6 +69,10 @@
 
 #include "VersionInfo.h"
 
+#if defined(BEE)
+#include "beebit.h"
+#endif
+
 
 const char *client_timestamp_eye = "MQTTClientV3_Timestamp " BUILD_TIMESTAMP;
 const char *client_version_eye = "MQTTClientV3_Version " CLIENT_VERSION;
@@ -376,6 +380,10 @@ int MQTTClient_create(MQTTClient* handle, const char* serverURI, const char* cli
 #endif
 	ListAppend(bstate->clients, m->c, sizeof(Clients) + 3*sizeof(List));
 
+#if defined(BEE)
+	init_beebit();
+#endif
+
 exit:
 	Thread_unlock_mutex(mqttclient_mutex);
 	FUNC_EXIT_RC(rc);
@@ -496,18 +504,22 @@ static int MQTTClient_deliverMessage(int rc, MQTTClients* m, char** topicName, i
 #if defined(BEE)
 	int decfail = 0;
 	if(m->beebit!=NULL){
-	if(m->beebit==1){
-		unsigned char* sub_pt_buffer = NULL;
-		unsigned char* sub_ct_buffer = NULL;
-		sub_ct_buffer =(char*)((*message)->payload);
+	if(m->beebit==1){//?
+		char* src = NULL;
+		char* dst = NULL;
+		src =(char*)((*message)->payload);
+		int src_len =(int)((*message)->payloadlen);
 		int dec_length = 0;
-		dec_length=beebit_decode(m->beehandle,sub_ct_buffer,&sub_pt_buffer);
+		
+		dec_length = (*beebit_handler_map[(unsigned char)src[0]][DECODE])(m->beehandle, src, src_len, &dst);
 		if(dec_length != -1){
-			*((char*)(sub_pt_buffer+dec_length))='\0';	
-			(*message)->payload=sub_pt_buffer;
+			*((char*)(dst + dec_length))='\0';	
+			(*message)->payload = dst;
+			(*message)->payloadlen = dec_length;
         	} else {
 			decfail = 1;
 			(*message)->payload="\n";
+			(*message)->payloadlen = 1;
         	}
 	}
 }
@@ -1622,7 +1634,7 @@ int MQTTClient_publish(MQTTClient handle, const char* topicName, int payloadlen,
 			unsigned char* bee_buf = NULL;
 			int length = 0;
 			int bee_encodelen = 0;
-			length = beebit_encode(m->beehandle, bee_buffer, &bee_buf);
+			length = (*beebit_handler_map[m->beehandle->security][ENCODE])(m->beehandle, payload, payloadlen, &bee_buf);
 			payload = bee_buf;
 			payloadlen = length;
   		}
