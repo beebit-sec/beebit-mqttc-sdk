@@ -62,6 +62,10 @@
 
 #include "VersionInfo.h"
 
+#if defined(BEE)
+#include "beebit.h"
+#endif
+
 const char *client_timestamp_eye = "MQTTAsyncV3_Timestamp " BUILD_TIMESTAMP;
 const char *client_version_eye = "MQTTAsyncV3_Version " CLIENT_VERSION;
 
@@ -289,7 +293,7 @@ typedef struct MQTTAsync_struct
 
 #if defined(BEE)
 	int beebit;
-	BeebitAsyncOptions* beehandle;
+	BeebitOptions* beehandle;
 	//to do MQTTAsync_BeeBitOptions* bee;
 	/*	MQTTAsync_send(MQTTAsync handle)
 		this beebit point to the MQTTAsync_BeeBitOptions to know the security
@@ -2155,14 +2159,15 @@ void Protocol_processPublication(Publish* publish, Clients* client)
 			int decfail = 0;
 			if(m->beebit!=NULL){
 				if(m->beebit==1){
-					unsigned char* sub_pt_buffer = NULL;
-					unsigned char* sub_ct_buffer = NULL;
-					sub_ct_buffer =mm->payload;
+					char* src = NULL;
+					char* dst = NULL;
+					src = mm->payload;
+					int src_len = mm->payloadlen;
 					int dec_length = 0;
-					dec_length=beebit_decode_Async(m->beehandle,sub_ct_buffer,&sub_pt_buffer);
+					dec_length=beebit_handler_map[m->beehandle->security][DECODE](m->beehandle,src,src_len,&dst);
 					if(dec_length != -1){
-						*((char*)(sub_pt_buffer+dec_length))='\0';	
-					mm->payload=sub_pt_buffer;
+						*((char*)(dst + dec_length))='\0';	
+					mm->payload=dst;
 					mm->payloadlen=dec_length;
         				} else {
 						decfail = 1;
@@ -2780,7 +2785,7 @@ int MQTTAsync_send(MQTTAsync handle, const char* destinationName, int payloadlen
 			unsigned char* bee_buf = NULL;
 	int length=0;
 	int bee_encodelen=0;
-	length=beebit_encode_Async(m->beehandle,bee_buffer,&bee_buf);
+	length=beebit_handler_map[m->beehandle->security][ENCODE](m->beehandle, payload, payloadlen, &bee_buf);
 	payload = bee_buf;
 	payloadlen = length;
 	

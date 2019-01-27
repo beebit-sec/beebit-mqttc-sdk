@@ -114,9 +114,10 @@
   #define DLLImport extern
   #define DLLExport __attribute__ ((visibility ("default")))
 #endif
-///bee
 
+/* beebit-mqttc-sdk */
 #include "beebit.h"
+
 #include <stdio.h>
 /// @endcond
 

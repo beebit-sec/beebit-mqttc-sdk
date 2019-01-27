@@ -48,6 +48,8 @@
 #include <sys/time.h>
 #endif
 
+//bee
+#include "../beebit.h"
 
 volatile int toStop = 0;
 
@@ -121,7 +123,7 @@ int main(int argc, char** argv) {
 
 	//based on encryption to choose options (default is CPABE)
 	BeebitCPABEOptions cpabeOpts = BeebitCPABEOptions_initializer;
-	//Bee_AES_options Bee_Options = Bee_AES_Options_initializer;
+	BeebitDUMMYOptions dummyOpts = BeebitDUMMYOptions_initializer;
 
 	char* topic = NULL;
 	char* buffer = NULL;
@@ -154,9 +156,11 @@ int main(int argc, char** argv) {
 	conn_opts.password = opts.password;
 	ssl_opts.enableServerCertAuth = 0;
 	beebitOpts.security = AC_CPABE;
+	//beebitOpts.security = RV_DUMMY;
 	cpabeOpts.pk = "/root/beebit-mqttc-sdk/cpabe_publickey";
 	cpabeOpts.ap = "jackie";
 	beebitOpts.opts = &cpabeOpts;
+	//beebitOpts.opts = &dummyOpts;
 	conn_opts.ssl = &ssl_opts;
   	conn_opts.beebit = &beebitOpts;
 	

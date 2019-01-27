@@ -11,7 +11,27 @@ The **beebit-mqttc-sdk** module implements an extensible and transparent end-to-
 
 The implementation is based on open source project - [Eclipse Paho](https://www.eclipse.org/paho/)[3]. Paho is the most popular projecr which provides MQTT and MQTT-SN client and supports a variety of langiages. The **beebit-mqttc-sdk** is based on C language.
 
-## Reerence
+## Install
+~~~bash
+cd paho.mqtt.c
+make clean
+make uninstall
+make install
+~~~
+
+## Evaluation
+Run subscriber on one terminal 
+~~~bash
+./build/output/samples/paho_cs_sub au/csie --host iot.eclipse.org
+~~~
+
+Run publisher on the other terminal
+~~~bash
+./build/output/samples/paho_cs_pub au/csie --host iot.eclipse.org
+hello world
+~~~
+
+## Reference
 1. http://mqtt.org/
 2. MQTT-TTS (paper submitted)
 3. https://www.eclipse.org/paho/

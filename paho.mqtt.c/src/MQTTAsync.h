@@ -98,9 +98,8 @@
   #define DLLExport  __attribute__ ((visibility ("default")))
 #endif
 
-//bee
-
-#include "beebit_Async.h"
+/* beebit-mqttc-sdk */
+#include "beebit.h"
 
 #include <stdio.h>
 /// @endcond
@@ -771,7 +770,7 @@ typedef struct
 	MQTTAsync_SSLOptions* ssl;
 
 	/*PROJECT BEEBIT */
-	BeebitAsyncOptions* beebit;
+	BeebitOptions* beebit;
 
 	/**
       * A pointer to a callback function to be called if the connect successfully
