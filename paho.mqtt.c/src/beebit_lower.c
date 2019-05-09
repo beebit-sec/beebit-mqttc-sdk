@@ -14,22 +14,17 @@ int beebit_lower_encode(const BeebitOptions* opt, char* src, int src_len, char**
 }
 
 int beebit_lower_decode(const BeebitOptions* opt, char* src, int src_len, char** dst) {	
-	int multiplier = 1 ;
-	int number = 1;
-	int dst_len = 0;
-	do {
-		dst_len += (src[number] & 127) * multiplier;
-		multiplier *= 128;
-	 } while((src[number++] &128) != 0);
+	int number = get_mqtt_tts_tl_byte_number(src);
+	int tl = get_mqtt_tts_tl(src);
 
-	char* dst_buf = (char*)malloc(sizeof(char)*dst_len);	
-	memcpy(dst_buf, src+number, dst_len);
+	char* dst_buf = (char*)malloc(sizeof(char)*tl);	
+	memcpy(dst_buf, src+number, tl);
 
 	int i;
-	for(i=0;i<dst_len;i++) {
+	for(i=0;i<tl;i++) {
 		dst_buf[i] = tolower(dst_buf[i]);
 	}
 	*dst = dst_buf;
 
-	return dst_len;
+	return tl;
 }	
