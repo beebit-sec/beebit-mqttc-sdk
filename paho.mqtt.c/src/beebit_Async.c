@@ -15,7 +15,7 @@ int beebit_encode_Async(BeebitAsyncOptions* beehandle, char* pt, char** bee_buf)
 	switch(beehandle->security)
 	{
 		case AC_CPABE:
-			enc_length = cpabe_enc(((BeebitCPABEOptions*)(beehandle->opts))->pk, pt, ((BeebitCPABEOptions*)(beehandle->opts))->ap, &ct);
+			enc_length = cpabe_enc(((BeebitCPABEOptions*)(beehandle->opts))->pk, pt, strlen(pt), ((BeebitCPABEOptions*)(beehandle->opts))->ap, &ct);
 			if(enc_length == -1){
 				printf("ENC ERROR!\n");
 				return -1;
@@ -65,7 +65,7 @@ int beebit_decode_Async(BeebitAsyncOptions* beehandle, char* ct, char** pt)
 	switch(ct[0])
 	{
 		case AC_CPABE:
-			length=cpabe_dec(((BeebitCPABEOptions*)(beehandle->opts))->pk,((BeebitCPABEOptions*)(beehandle->opts))->sk, ct+number, pt);
+			length=cpabe_dec(((BeebitCPABEOptions*)(beehandle->opts))->pk,((BeebitCPABEOptions*)(beehandle->opts))->sk, ct+number, value, pt);
 			if(length==-1){
 				printf("DEC FAIL\n");
 				return -1;
