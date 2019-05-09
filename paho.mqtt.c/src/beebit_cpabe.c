@@ -37,7 +37,7 @@ int beebit_cpabe_decode(const BeebitOptions* opt, char* src, int src_len, char**
 	 } while((src[number++] &128) != 0);
 	
 	int dst_len = 0;
-	dst_len = cpabe_dec(((BeebitCPABEOptions*)(opt->opts))->pk,((BeebitCPABEOptions*)(opt->opts))->sk, src+number, dst);
+	dst_len = cpabe_dec(((BeebitCPABEOptions*)(opt->opts))->pk,((BeebitCPABEOptions*)(opt->opts))->sk, src+number, ct_len, dst);
 	if(dst_len == -1){
 		printf("[AC_CPABE] Decrypt failed!\n");
 		return -1;
