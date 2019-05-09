@@ -17,6 +17,7 @@ In order to applying CP-ABE in MQTT-TTS, you MUST install the [**beebit-cpabe-sd
 cd paho.mqtt.c
 make clean
 make uninstall
+make
 make install
 ~~~
 
