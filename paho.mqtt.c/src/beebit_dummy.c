@@ -19,6 +19,7 @@ int beebit_dummy_decode(const BeebitOptions* opt, char* src, int src_len, char**
 
 	char* dst_buf = (char*)malloc(sizeof(char)*tl);	
 	memcpy(dst_buf, src+number, tl);
+
 	*dst = dst_buf;
 
 	return tl;

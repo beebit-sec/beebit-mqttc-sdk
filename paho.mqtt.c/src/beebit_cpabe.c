@@ -32,7 +32,9 @@ int beebit_cpabe_decode(const BeebitOptions* opt, char* src, int src_len, char**
 	int tl = get_mqtt_tts_tl(src);
 
 	int dst_len = 0;
+
 	dst_len = cpabe_dec(((BeebitCPABEOptions*)(opt->opts))->pk,((BeebitCPABEOptions*)(opt->opts))->sk, src+number, tl, dst);
+
 	if(dst_len == -1){
 		printf("[AC_CPABE] Decrypt failed!\n");
 		return -1;
