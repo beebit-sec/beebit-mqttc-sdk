@@ -28,16 +28,11 @@ int beebit_cpabe_encode(const BeebitOptions* opt, char* src, int src_len, char**
 
 /* MQTT-TTS -> MQTT */
 int beebit_cpabe_decode(const BeebitOptions* opt, char* src, int src_len, char** dst) {	
-	int multiplier = 1 ;
-	int number = 1;
-	int ct_len = 0;
-	do {
-		ct_len += (src[number] & 127) * multiplier;
-		multiplier *= 128;
-	 } while((src[number++] &128) != 0);
-	
+	int number = get_mqtt_tts_tl_byte_number(src);
+	int tl = get_mqtt_tts_tl(src);
+
 	int dst_len = 0;
-	dst_len = cpabe_dec(((BeebitCPABEOptions*)(opt->opts))->pk,((BeebitCPABEOptions*)(opt->opts))->sk, src+number, ct_len, dst);
+	dst_len = cpabe_dec(((BeebitCPABEOptions*)(opt->opts))->pk,((BeebitCPABEOptions*)(opt->opts))->sk, src+number, tl, dst);
 	if(dst_len == -1){
 		printf("[AC_CPABE] Decrypt failed!\n");
 		return -1;

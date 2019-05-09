@@ -19,6 +19,8 @@ extern void init_beebit();
 extern int create_mqtt_tts_msg(unsigned char sec, char*payload, int payloadlen, char** dst);
 typedef int (*beebit_handler)(BeebitOptions*, char*, int, char**);
 extern beebit_handler beebit_handler_map[256][2];
+extern int get_mqtt_tts_tl_byte_number(char* src);
+extern int get_mqtt_tts_tl(char* src);
 
 #define BeebitOptions_initializer {{'B','E','E','B','I','T'}, 0, 0, NULL}
 #define ENCODE 0

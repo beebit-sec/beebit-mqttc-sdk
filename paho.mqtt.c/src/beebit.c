@@ -42,3 +42,25 @@ int create_mqtt_tts_msg(unsigned char sec, char*payload, int payloadlen, char** 
 	free(plen_buf);
 	return dst_len;
 }
+
+int get_mqtt_tts_tl_byte_number(char* src) {
+	int multiplier = 1;
+	int number = 1;
+	int tl = 0;
+	do {
+		tl += (src[number] & 127) * multiplier;
+		multiplier *= 128;
+	} while((src[number++] &128) != 0);
+	return number;
+}
+
+int get_mqtt_tts_tl(char* src) {
+	int multiplier = 1;
+	int number = 1;
+	int tl = 0;
+	do {
+		tl += (src[number] & 127) * multiplier;
+		multiplier *= 128;
+	} while((src[number++] &128) != 0);
+	return tl;
+}
