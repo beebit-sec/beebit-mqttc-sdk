@@ -12,7 +12,7 @@ The **beebit-mqttc-sdk** module implements an extensible and transparent end-to-
 The implementation is based on open source project - [Eclipse Paho](https://www.eclipse.org/paho/)[3]. Paho is the most popular project which provides MQTT and MQTT-SN client and supports a variety of languages. The **beebit-mqttc-sdk** is based on C language.
 
 ## Installation
-In order to applying Ciphertext Policy Attribute-Based Encryption (CP-ABE) in MQTT-TTS, you **MUST** install the [**beebit-cpabe-sdk**](https://github.com/beebit-sec/beebit-cpabe-sdk) module (native C). 
+In order to applying Ciphertext-Policy Attribute-Based Encryption (CP-ABE) in MQTT-TTS, you **MUST** install the [**beebit-cpabe-sdk**](https://github.com/beebit-sec/beebit-cpabe-sdk) module (native C). 
 
 ~~~bash
 cd paho.mqtt.c
