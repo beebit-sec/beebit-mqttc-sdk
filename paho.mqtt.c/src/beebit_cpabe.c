@@ -14,7 +14,7 @@ int beebit_cpabe_encode(const BeebitOptions* opt, char* src, int src_len, char**
 	char* ct = NULL;
 	int ct_len = 0;
 	
-	ct_len = cpabe_enc_l(((BeebitCPABEOptions*)(opt->opts))->pk, src, src_len, ((BeebitCPABEOptions*)(opt->opts))->ap, &ct);
+	ct_len = cpabe_enc(((BeebitCPABEOptions*)(opt->opts))->pk, src, src_len, ((BeebitCPABEOptions*)(opt->opts))->ap, &ct);
 
 	if(ct_len == -1) {
 		printf("[AC_CPABE] Encrypt failed!\n");
