@@ -4,8 +4,8 @@
 #include"beebit_lower.h"
 
 void init_lower() {
-	beebit_handler_map[RV_LOWER][ENCODE] = beebit_lower_encode;
-	beebit_handler_map[RV_LOWER][DECODE] = beebit_lower_decode;
+	aaa tmp = { beebit_lower_encode,beebit_lower_decode,RV_LOWER };
+	aaa_list_push_front(tmp);
 }
 
 int beebit_lower_encode(const BeebitOptions* opt, char* src, int src_len, char** dst) {
@@ -27,4 +27,4 @@ int beebit_lower_decode(const BeebitOptions* opt, char* src, int src_len, char**
 	*dst = dst_buf;
 
 	return tl;
-}	
+}
