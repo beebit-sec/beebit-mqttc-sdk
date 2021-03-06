@@ -5,8 +5,8 @@
 #include"beebit_cpabe.h"
 
 void init_cpabe() {
-	beebit_handler_map[AC_CPABE][ENCODE] = beebit_cpabe_encode;
-	beebit_handler_map[AC_CPABE][DECODE] = beebit_cpabe_decode;
+	aaa tmp = { beebit_cpabe_encode,beebit_cpabe_decode,AC_CPABE };
+	aaa_list_push_front(tmp);
 }
 
 /* MQTT -> MQTT-TTS */ 
@@ -41,4 +41,4 @@ int beebit_cpabe_decode(const BeebitOptions* opt, char* src, int src_len, char**
 	}
 
 	return dst_len;
-}	
+}
