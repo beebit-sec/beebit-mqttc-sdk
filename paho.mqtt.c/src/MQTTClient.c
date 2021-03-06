@@ -510,8 +510,14 @@ static int MQTTClient_deliverMessage(int rc, MQTTClients* m, char** topicName, i
 		src =(char*)((*message)->payload);
 		int src_len =(int)((*message)->payloadlen);
 		int dec_length = 0;
-		
-		dec_length = (*beebit_handler_map[(unsigned char)src[0]][DECODE])(m->beehandle, src, src_len, &dst);
+
+		for (aaa_list_iterator_constructor(); aaa_list_iterator_notDone(); aaa_list_iterator_next())
+			if(aaa_list_iterator_currentItem()->code == (unsigned char)src[0])
+				goto ooo;
+		//null,no this ..	
+	ooo:	
+		dec_length = aaa_list_iterator_currentItem()->decode(m->beehandle, src, src_len, &dst);
+
 		if(dec_length != -1){
 			*((char*)(dst + dec_length))='\0';	
 			(*message)->payload = dst;
@@ -1634,7 +1640,14 @@ int MQTTClient_publish(MQTTClient handle, const char* topicName, int payloadlen,
 			unsigned char* bee_buf = NULL;
 			int length = 0;
 			int bee_encodelen = 0;
-			length = (*beebit_handler_map[m->beehandle->security][ENCODE])(m->beehandle, payload, payloadlen, &bee_buf);
+
+			for (aaa_list_iterator_constructor(); aaa_list_iterator_notDone(); aaa_list_iterator_next())
+				if (aaa_list_iterator_currentItem()->code == m->beehandle->security)
+					goto ooo;
+			//null,no this ..
+		ooo:
+			length = aaa_list_iterator_currentItem()->encode(m->beehandle, payload, payloadlen, &bee_buf);
+			
 			payload = bee_buf;
 			payloadlen = length;
   		}
