@@ -4,8 +4,8 @@
 #include"beebit_lower.h"
 
 void init_dummy() {
-	beebit_handler_map[RV_DUMMY][ENCODE] = beebit_dummy_encode;
-	beebit_handler_map[RV_DUMMY][DECODE] = beebit_dummy_decode;
+	aaa tmp = { beebit_dummy_encode,beebit_dummy_decode,RV_DUMMY };
+	aaa_list_push_front(tmp);
 }
 
 int beebit_dummy_encode(const BeebitOptions* opt, char* src, int src_len, char** dst) {
@@ -23,4 +23,4 @@ int beebit_dummy_decode(const BeebitOptions* opt, char* src, int src_len, char**
 	*dst = dst_buf;
 
 	return tl;
-}	
+}
