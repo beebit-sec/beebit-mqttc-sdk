@@ -3,7 +3,7 @@
 #include <string.h>
 #include "beebit.h"
 
-beebit_handler beebit_handler_map[256][2];
+aaa_list beebit_handler_map = {};
 
 void init_beebit() { 
 	int i;
