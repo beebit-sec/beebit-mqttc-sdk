@@ -2794,12 +2794,13 @@ int MQTTAsync_send(MQTTAsync handle, const char* destinationName, int payloadlen
 	int length=0;
 	int bee_encodelen=0;
 	
-	for (aaa_list_iterator_constructor(); aaa_list_iterator_notDone(); aaa_list_iterator_next())
-		if (aaa_list_iterator_currentItem()->code == m->beehandle->security)
-			goto ooo;
-	//null,no this ..
-ooo:
-	length = aaa_list_iterator_currentItem()->encode(m->beehandle, payload, payloadlen, &bee_buf);
+	encode_info_list_node* p;
+	for (p = beebit_handler_map.head; p; p = p->next)
+		if (p->value->code == m->beehandle->security)
+			goto find_code;
+	//no find code, return error?
+find_code:
+	length = p->value->encode(m->beehandle, payload, payloadlen, &bee_buf);
 	
 	payload = bee_buf;
 	payloadlen = length;
