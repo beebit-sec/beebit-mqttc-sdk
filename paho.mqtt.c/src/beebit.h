@@ -15,7 +15,7 @@ typedef struct {
 	void* opts;
 } BeebitOptions;
 
-extern void init_beebit();
+extern int init_beebit();
 extern int create_mqtt_tts_msg(unsigned char sec, char*payload, int payloadlen, char** dst);
 typedef int (*beebit_handler)(BeebitOptions*, char*, int, char**);
 
