@@ -19,59 +19,24 @@ extern void init_beebit();
 extern int create_mqtt_tts_msg(unsigned char sec, char*payload, int payloadlen, char** dst);
 typedef int (*beebit_handler)(BeebitOptions*, char*, int, char**);
 
-typedef struct {
+typedef struct encode_info {
 	beebit_handler encode;
 	beebit_handler decode;
 	unsigned char code;
-}aaa;
+} encode_info;
 
-typedef struct _aaa_list_data
-{
-	aaa value;
-	struct _aaa_list_data* next;
-}aaa_list_data;
+typedef struct encode_info_list_node {
+	encode_info value;
+	struct encode_info_list_node* next;
+} encode_info_list_node;
 
-typedef struct
-{
-	aaa_list_data* begin;
+typedef struct encode_info_list {
+	encode_info_list_node* head;
+} encode_info_list;
 
-	aaa_list_data* lpCurrent;
-}aaa_list;
+extern encode_info_list beebit_handler_map;
 
-extern aaa_list beebit_handler_map;
-
-#include<stdlib.h>
-inline static void aaa_list_push_front(aaa value)
-{
-	aaa_list_data* p = malloc(sizeof(aaa_list_data));
-	if (!p)
-		exit(-1);//bad alloc
-
-	p->value = value;
-	p->next = beebit_handler_map.begin;
-
-	beebit_handler_map.begin = p;
-}
-
-inline static void aaa_list_iterator_constructor()
-{
-	beebit_handler_map.lpCurrent = beebit_handler_map.begin;
-}
-
-inline static aaa_list_data* aaa_list_iterator_notDone()
-{
-	return beebit_handler_map.lpCurrent;
-}
-
-inline static void aaa_list_iterator_next()
-{
-	beebit_handler_map.lpCurrent = beebit_handler_map.lpCurrent->next;
-}
-
-inline static aaa* aaa_list_iterator_currentItem()
-{
-	return &beebit_handler_map.lpCurrent->value;
-}
+extern int encode_info_list_push_front(encode_info value);
 
 extern int get_mqtt_tts_tl_byte_number(char* src);
 extern int get_mqtt_tts_tl(char* src);
