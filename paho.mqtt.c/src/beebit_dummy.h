@@ -1,7 +1,7 @@
 #ifndef BEEBIT_DUMMY_H
 #define BEEBIT_DUMMY_H
 
-extern void init_dummy();
+extern int init_dummy();
 #include "beebit.h"
 
 #define RV_DUMMY 192
