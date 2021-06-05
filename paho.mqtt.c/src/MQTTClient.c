@@ -381,7 +381,8 @@ int MQTTClient_create(MQTTClient* handle, const char* serverURI, const char* cli
 	ListAppend(bstate->clients, m->c, sizeof(Clients) + 3*sizeof(List));
 
 #if defined(BEE)
-	init_beebit();
+	if (init_beebit())//fail return -1
+		;//retrun error?
 #endif
 
 exit:
