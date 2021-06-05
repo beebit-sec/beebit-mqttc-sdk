@@ -5,11 +5,13 @@
 
 encode_info_list beebit_handler_map = {};
 
-void init_beebit() { 
+int init_beebit() { 
 	int i;
 	for(i=0;i<NOM;i++) {
-		init_sec_map[i]();
+		if(init_sec_map[i]())
+			return -1;
 	}
+	return 0;
 }
 
 int create_mqtt_tts_msg(unsigned char sec, char*payload, int payloadlen, char** dst) {
