@@ -4,9 +4,11 @@
 #include<beebitcpabe.h>
 #include"beebit_cpabe.h"
 
-void init_cpabe() {
-	aaa tmp = { beebit_cpabe_encode,beebit_cpabe_decode,AC_CPABE };
-	aaa_list_push_front(tmp);
+int init_cpabe() {
+	encode_info temp = { beebit_cpabe_encode,beebit_cpabe_decode,AC_CPABE };
+	if (encode_info_list_push_front(temp))
+		return -1;
+	return 0;
 }
 
 /* MQTT -> MQTT-TTS */ 
