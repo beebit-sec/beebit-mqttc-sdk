@@ -1648,7 +1648,7 @@ int MQTTClient_publish(MQTTClient handle, const char* topicName, int payloadlen,
 					goto find_code;
 			//no find code, return error?
 		find_code:
-			length = aaa_list_iterator_currentItem()->encode(m->beehandle, payload, payloadlen, &bee_buf);
+			length = p->value->encode(m->beehandle, payload, payloadlen, &bee_buf);
 			
 			payload = bee_buf;
 			payloadlen = length;
