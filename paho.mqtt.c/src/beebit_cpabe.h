@@ -1,7 +1,7 @@
 #ifndef BEEBIT_CPABE_H
 #define BEEBIT_CPABE_H
 
-extern void init_cpabe();
+extern int init_cpabe();
 #include "beebit.h"
 
 #define AC_CPABE 67

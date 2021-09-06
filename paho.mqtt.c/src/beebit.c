@@ -3,13 +3,15 @@
 #include <string.h>
 #include "beebit.h"
 
-beebit_handler beebit_handler_map[256][2];
+encode_info_list beebit_handler_map = {};
 
-void init_beebit() { 
+int init_beebit() { 
 	int i;
 	for(i=0;i<NOM;i++) {
-		init_sec_map[i]();
+		if(init_sec_map[i]())
+			return -1;
 	}
+	return 0;
 }
 
 int create_mqtt_tts_msg(unsigned char sec, char*payload, int payloadlen, char** dst) {
@@ -63,4 +65,18 @@ int get_mqtt_tts_tl(char* src) {
 		multiplier *= 128;
 	} while((src[number++] &128) != 0);
 	return tl;
+}
+
+int encode_info_list_push_front(encode_info value)
+{
+	encode_info_list_node* p = malloc(sizeof(encode_info_list_node));
+	if (!p)
+		return -1;//bad alloc
+
+	p->value = value;
+	p->next = beebit_handler_map.head;
+
+	beebit_handler_map.head = p;
+	
+	return 0;
 }

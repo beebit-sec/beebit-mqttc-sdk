@@ -3,9 +3,11 @@
 #include<string.h>
 #include"beebit_lower.h"
 
-void init_dummy() {
-	beebit_handler_map[RV_DUMMY][ENCODE] = beebit_dummy_encode;
-	beebit_handler_map[RV_DUMMY][DECODE] = beebit_dummy_decode;
+int init_dummy() {
+	encode_info temp = { beebit_dummy_encode,beebit_dummy_decode,RV_DUMMY };
+	if (encode_info_list_push_front(temp))
+		return -1;
+	return 0;
 }
 
 int beebit_dummy_encode(const BeebitOptions* opt, char* src, int src_len, char** dst) {
@@ -23,4 +25,4 @@ int beebit_dummy_decode(const BeebitOptions* opt, char* src, int src_len, char**
 	*dst = dst_buf;
 
 	return tl;
-}	
+}

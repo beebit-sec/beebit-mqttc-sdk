@@ -381,7 +381,8 @@ int MQTTClient_create(MQTTClient* handle, const char* serverURI, const char* cli
 	ListAppend(bstate->clients, m->c, sizeof(Clients) + 3*sizeof(List));
 
 #if defined(BEE)
-	init_beebit();
+	if (init_beebit())//fail return -1
+		;//retrun error?
 #endif
 
 exit:
@@ -511,7 +512,14 @@ static int MQTTClient_deliverMessage(int rc, MQTTClients* m, char** topicName, i
 		int src_len =(int)((*message)->payloadlen);
 		int dec_length = 0;
 		
-		dec_length = (*beebit_handler_map[(unsigned char)src[0]][DECODE])(m->beehandle, src, src_len, &dst);
+		encode_info_list_node* p;
+		for (p = beebit_handler_map.head; p; p = p->next)
+			if(p->value->code == (unsigned char)src[0])
+				goto find_code;
+		//no find code, return error?
+	find_code:
+		dec_length = p->value->decode(m->beehandle, src, src_len, &dst);
+
 		if(dec_length != -1){
 			*((char*)(dst + dec_length))='\0';	
 			(*message)->payload = dst;
@@ -1634,7 +1642,15 @@ int MQTTClient_publish(MQTTClient handle, const char* topicName, int payloadlen,
 			unsigned char* bee_buf = NULL;
 			int length = 0;
 			int bee_encodelen = 0;
-			length = (*beebit_handler_map[m->beehandle->security][ENCODE])(m->beehandle, payload, payloadlen, &bee_buf);
+
+			encode_info_list_node* p;
+			for (p = beebit_handler_map.head; p; p = p->next)
+				if (p->value->code == m->beehandle->security)
+					goto find_code;
+			//no find code, return error?
+		find_code:
+			length = p->value->encode(m->beehandle, payload, payloadlen, &bee_buf);
+			
 			payload = bee_buf;
 			payloadlen = length;
   		}

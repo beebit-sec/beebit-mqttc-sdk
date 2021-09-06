@@ -2164,7 +2164,15 @@ void Protocol_processPublication(Publish* publish, Clients* client)
 					src = mm->payload;
 					int src_len = mm->payloadlen;
 					int dec_length = 0;
-					dec_length=beebit_handler_map[m->beehandle->security][DECODE](m->beehandle,src,src_len,&dst);
+					
+					encode_info_list_node* p;
+					for (p = beebit_handler_map.head; p; p = p->next)
+						if (p->value->code == m->beehandle->security)
+							goto find_code;
+					//no find code, return error?
+				find_code:
+					dec_length = p->value->decode(m->beehandle,src,src_len,&dst);
+
 					if(dec_length != -1){
 						*((char*)(dst + dec_length))='\0';	
 					mm->payload=dst;
@@ -2785,7 +2793,15 @@ int MQTTAsync_send(MQTTAsync handle, const char* destinationName, int payloadlen
 			unsigned char* bee_buf = NULL;
 	int length=0;
 	int bee_encodelen=0;
-	length=beebit_handler_map[m->beehandle->security][ENCODE](m->beehandle, payload, payloadlen, &bee_buf);
+	
+	encode_info_list_node* p;
+	for (p = beebit_handler_map.head; p; p = p->next)
+		if (p->value->code == m->beehandle->security)
+			goto find_code;
+	//no find code, return error?
+find_code:
+	length = p->value->encode(m->beehandle, payload, payloadlen, &bee_buf);
+	
 	payload = bee_buf;
 	payloadlen = length;
 	

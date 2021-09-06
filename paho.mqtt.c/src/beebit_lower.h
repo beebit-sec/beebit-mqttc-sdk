@@ -1,7 +1,7 @@
 #ifndef BEEBIT_LOWER_H
 #define BEEBIT_LOWER_H
 
-extern void init_lower();
+extern int init_lower();
 #include "beebit.h"
 
 #define RV_LOWER 193
